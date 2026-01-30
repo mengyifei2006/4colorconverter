@@ -3,73 +3,531 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Converter - HEX, RGB, HSL Tool</title>
-    <meta name="description" content="A free online color converter tool. Instantly convert HEX to RGB, RGB to HSL, HSL to HEX, and more. Perfect for designers and developers.">
-    <link rel="stylesheet" href="style.css">
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YXTJKNMK0L"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <title>4Color Converter - Professional Color Tools for Designers</title>
+    <meta name="description" content="Professional color converter tool (HEX, RGB, HSL, CMYK, HSV). Features contrast checker, palette generator, and immersive Apple-style interface.">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1336697940295449" crossorigin="anonymous"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
 
-  gtag('config', 'G-YXTJKNMK0L');
-</script>
+    <!-- Iro.js for Color Wheel -->
+    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+
+    <style>
+        body {
+            transition: background-color 0.8s ease;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        }
+        .input-apple {
+            @apply w-full bg-slate-100 text-slate-800 font-mono px-4 py-3 rounded-xl border-0 focus:ring-2 focus:ring-blue-500/50 transition-all duration-200 outline-none;
+        }
+        .bento-card {
+            @apply bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300 border border-slate-100 flex flex-col justify-between h-full relative overflow-hidden;
+        }
+        .copy-overlay {
+            @apply absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200 cursor-pointer backdrop-blur-[1px];
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "4Color Converter",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Advanced color converter tool for designers. Convert HEX, RGB, HSL, CMYK, HSV with real-time preview and contrast checking."
+    }
+    </script>
 </head>
-<body>
-    <div class="container">
-        <h1>Online Color Converter</h1>
+<body class="min-h-screen text-slate-800 antialiased selection:bg-blue-500/30">
+    
+    <!-- Dynamic Background Overlay -->
+    <div id="ambient-bg" class="fixed inset-0 pointer-events-none z-[-1] transition-colors duration-1000 opacity-10 animate-pulse-slow"></div>
 
-        <div id="color-preview"></div>
+    <main class="max-w-6xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-4">
+                4Color <span class="text-blue-600">Converter</span>
+            </h1>
+            <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                Professional color tools for modern creators. Convert, analyze, and generate palettes in real-time.
+            </p>
+        </header>
 
-        <div class="converter-wrapper">
-            <div class="input-group">
-                <label for="hex-input">HEX:</label>
-                <input type="text" id="hex-input" placeholder="#RRGGBB">
+        <!-- Hero Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            <!-- Color Picker (Wheel) -->
+            <div class="lg:col-span-5 flex items-center justify-center p-8 glass-panel rounded-[2rem]">
+                <div id="color-picker-container"></div>
             </div>
-            <div class="input-group">
-                <label>RGB:</label>
-                <div class="input-row">
-                    <input type="number" id="rgb-r" min="0" max="255" placeholder="R">
-                    <input type="number" id="rgb-g" min="0" max="255" placeholder="G">
-                    <input type="number" id="rgb-b" min="0" max="255" placeholder="B">
-                </div>
-            </div>
-            <div class="input-group">
-                <label>HSL:</label>
-                <div class="input-row">
-                    <input type="number" id="hsl-h" min="0" max="360" placeholder="H">
-                    <input type="number" id="hsl-s" min="0" max="100" placeholder="S">
-                    <input type="number" id="hsl-l" min="0" max="100" placeholder="L">
+
+            <!-- Preview Card -->
+            <div class="lg:col-span-7">
+                <div id="main-preview" class="w-full h-full min-h-[300px] rounded-[2rem] shadow-2xl transition-colors duration-200 flex items-center justify-center relative overflow-hidden group">
+                    <div class="text-white/90 text-center space-y-2 pointer-events-none mix-blend-difference">
+                        <p class="text-sm font-medium uppercase tracking-widest opacity-80">Selected Color</p>
+                        <p id="preview-hex" class="text-5xl font-mono font-bold tracking-tighter">#FFFFFF</p>
+                    </div>
+                    <!-- Shine effect -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
             </div>
         </div>
 
-        <div class="content">
-            <h2>How to Use This Color Converter</h2>
-            <p>Simply enter a color value in any of the fields (HEX, RGB, or HSL), and all other formats will update in real-time. The color preview box at the top will also display the selected color instantly. This tool provides a seamless way to convert colors without any extra steps.</p>
-
-            <h2>Understanding Color Models (HEX, RGB, HSL)</h2>
-
-            <h3>What is HEX Color?</h3>
-            <p>HEX (Hexadecimal) is a common way to represent colors on the web. It uses a '#' symbol followed by six characters (RRGGBB), where each pair represents the intensity of Red, Green, and Blue. The values range from 00 (lowest) to FF (highest). For example, #FFFFFF is white, and #000000 is black.</p>
-
-            <h3>What is RGB Color?</h3>
-            <p>RGB (Red, Green, Blue) is an additive color model where red, green, and blue light are added together in various ways to reproduce a broad array of colors. The value for each component ranges from 0 to 255. For example, rgb(255, 0, 0) is pure red.</p>
-
-            <h3>What is HSL Color?</h3>
-            <p>HSL stands for Hue, Saturation, and Lightness. This model is often considered more intuitive for humans. Hue is the degree on the color wheel (from 0 to 360). Saturation is the intensity of the color (from 0% to 100%). Lightness is the brightness (from 0% to 100%).</p>
-
-            <h2>Color Converter FAQ</h2>
-
-            <h3>Is this tool free?</h3>
-            <p>Yes, this online color converter is 100% free for designers, developers, and artists.</p>
-
-            <h3>What is this tool for?</h3>
-            <p>It's used to quickly convert color codes between formats. For example, a web developer might have a HEX code from a design mockup and need the RGB or HSL value for use in CSS or a different application.</p>
+        <!-- AdSense Banner -->
+        <div class="w-full h-24 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center mb-12 bg-slate-50/50">
+            <span class="text-slate-400 font-medium text-sm tracking-widest uppercase">Sponsored Advertisement</span>
         </div>
+
+        <!-- Data Grid (Bento) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            
+            <!-- HEX Card -->
+            <div class="bento-card group">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-semibold text-slate-400 text-sm uppercase tracking-wider">HEX</h3>
+                    <button class="text-slate-400 hover:text-blue-500 transition-colors" onclick="copyToClipboard('input-hex')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    </button>
+                </div>
+                <input type="text" id="input-hex" class="input-apple text-xl" spellcheck="false">
+                <div class="copy-overlay rounded-3xl" onclick="copyToClipboard('input-hex')">
+                    <span class="bg-black/75 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md">Copy</span>
+                </div>
+            </div>
+
+            <!-- RGB Card -->
+            <div class="bento-card group">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-semibold text-slate-400 text-sm uppercase tracking-wider">RGB</h3>
+                    <button class="text-slate-400 hover:text-blue-500 transition-colors" onclick="copyToClipboard('input-rgb')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    </button>
+                </div>
+                <input type="text" id="input-rgb" class="input-apple text-xl" spellcheck="false">
+                <div class="copy-overlay rounded-3xl" onclick="copyToClipboard('input-rgb')">
+                    <span class="bg-black/75 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md">Copy</span>
+                </div>
+            </div>
+
+            <!-- HSL Card -->
+            <div class="bento-card group">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-semibold text-slate-400 text-sm uppercase tracking-wider">HSL</h3>
+                    <button class="text-slate-400 hover:text-blue-500 transition-colors" onclick="copyToClipboard('input-hsl')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    </button>
+                </div>
+                <input type="text" id="input-hsl" class="input-apple text-xl" spellcheck="false">
+                <div class="copy-overlay rounded-3xl" onclick="copyToClipboard('input-hsl')">
+                    <span class="bg-black/75 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md">Copy</span>
+                </div>
+            </div>
+
+            <!-- CMYK Card -->
+            <div class="bento-card group">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-semibold text-slate-400 text-sm uppercase tracking-wider">CMYK</h3>
+                    <button class="text-slate-400 hover:text-blue-500 transition-colors" onclick="copyToClipboard('input-cmyk')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    </button>
+                </div>
+                <input type="text" id="input-cmyk" class="input-apple text-xl" spellcheck="false">
+                <div class="copy-overlay rounded-3xl" onclick="copyToClipboard('input-cmyk')">
+                    <span class="bg-black/75 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md">Copy</span>
+                </div>
+            </div>
+
+            <!-- HSV Card -->
+            <div class="bento-card group">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-semibold text-slate-400 text-sm uppercase tracking-wider">HSV</h3>
+                    <button class="text-slate-400 hover:text-blue-500 transition-colors" onclick="copyToClipboard('input-hsv')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    </button>
+                </div>
+                <input type="text" id="input-hsv" class="input-apple text-xl" spellcheck="false">
+                <div class="copy-overlay rounded-3xl" onclick="copyToClipboard('input-hsv')">
+                    <span class="bg-black/75 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md">Copy</span>
+                </div>
+            </div>
+
+            <!-- Contrast Checker (Span 2 on lg) -->
+            <div class="bento-card group lg:col-span-1 flex flex-col justify-between">
+                <div class="mb-4">
+                    <h3 class="font-semibold text-slate-400 text-sm uppercase tracking-wider mb-2">Contrast Checker</h3>
+                    <p class="text-xs text-slate-500">WCAG 2.0 Accessibility Guidelines</p>
+                </div>
+                
+                <div class="space-y-3">
+                    <!-- White Text Test -->
+                    <div id="contrast-white-bg" class="p-3 rounded-lg flex justify-between items-center transition-colors">
+                        <span class="font-medium text-white">White Text</span>
+                        <div class="flex gap-2 text-xs font-bold">
+                            <span id="score-white-aa" class="px-2 py-1 rounded bg-white/20 text-white">AA</span>
+                            <span id="score-white-aaa" class="px-2 py-1 rounded bg-white/20 text-white">AAA</span>
+                        </div>
+                    </div>
+                    <!-- Black Text Test -->
+                    <div id="contrast-black-bg" class="p-3 rounded-lg flex justify-between items-center transition-colors">
+                        <span class="font-medium text-black">Black Text</span>
+                        <div class="flex gap-2 text-xs font-bold">
+                            <span id="score-black-aa" class="px-2 py-1 rounded bg-black/10 text-black">AA</span>
+                            <span id="score-black-aaa" class="px-2 py-1 rounded bg-black/10 text-black">AAA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Palette Generator -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">Shades & Tints</h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="palette-container">
+                <!-- Generated by JS -->
+            </div>
+        </section>
+
+        <!-- Color Theory Content -->
+        <article class="prose prose-slate max-w-none glass-panel p-8 rounded-3xl">
+            <h2 class="text-3xl font-bold mb-6">Color Theory 101</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">RGB vs CMYK</h3>
+                    <p class="text-slate-600 mb-4">
+                        <strong>RGB (Red, Green, Blue)</strong> is an additive color model used for digital screens. Light is added together to create colors. When all three are combined at full intensity, you get white.
+                    </p>
+                    <p class="text-slate-600">
+                        <strong>CMYK (Cyan, Magenta, Yellow, Key/Black)</strong> is a subtractive color model used for printing. Ink subtracts brightness from white paper. When all colors are combined, you get black (or a dark muddy brown, hence the need for pure Black 'K').
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">HSL (Hue, Saturation, Lightness)</h3>
+                    <p class="text-slate-600 mb-4">
+                        HSL is often considered more intuitive for humans than RGB.
+                    </p>
+                    <ul class="list-disc pl-5 text-slate-600 space-y-2">
+                        <li><strong>Hue</strong>: The color type (0-360°).</li>
+                        <li><strong>Saturation</strong>: The intensity or purity of the color (0-100%).</li>
+                        <li><strong>Lightness</strong>: How bright the color is (0-100%).</li>
+                    </ul>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Footer / Sidebar AdSense placeholder for mobile -->
+        <div class="mt-12 w-full h-24 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center bg-slate-50/50 lg:hidden">
+            <span class="text-slate-400 font-medium text-sm tracking-widest uppercase">Sponsored Advertisement</span>
+        </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800/90 text-white px-6 py-3 rounded-full shadow-lg backdrop-blur-md transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-50 font-medium tracking-wide">
+        Copied to clipboard
     </div>
 
-    <script src="script.js"></script>
+    </main>
+
+    <script>
+        // --- Logic ---
+        
+        // Initialize Iro.js Color Picker
+        const colorPicker = new iro.ColorPicker("#color-picker-container", {
+            width: 280,
+            color: "#3b82f6", // Default Blue-500
+            borderWidth: 1,
+            borderColor: "#fff",
+            layout: [
+                { 
+                    component: iro.ui.Wheel,
+                    options: {
+                        wheelLightness: false,
+                        wheelAngle: 0,
+                        wheelDirection: 'anticlockwise'
+                    }
+                },
+                { 
+                    component: iro.ui.Slider,
+                    options: {
+                        sliderType: 'value' // Lightness slider
+                    }
+                }
+            ]
+        });
+
+        // DOM Elements
+        const els = {
+            preview: document.getElementById('main-preview'),
+            previewHex: document.getElementById('preview-hex'),
+            ambientBg: document.getElementById('ambient-bg'),
+            inputs: {
+                hex: document.getElementById('input-hex'),
+                rgb: document.getElementById('input-rgb'),
+                hsl: document.getElementById('input-hsl'),
+                cmyk: document.getElementById('input-cmyk'),
+                hsv: document.getElementById('input-hsv'),
+            },
+            palette: document.getElementById('palette-container'),
+            contrast: {
+                whiteBg: document.getElementById('contrast-white-bg'),
+                blackBg: document.getElementById('contrast-black-bg'),
+                whiteAA: document.getElementById('score-white-aa'),
+                whiteAAA: document.getElementById('score-white-aaa'),
+                blackAA: document.getElementById('score-black-aa'),
+                blackAAA: document.getElementById('score-black-aaa'),
+            }
+        };
+
+        // Event Listeners
+        colorPicker.on('color:change', function(color) {
+            updateUI(color);
+        });
+
+        els.inputs.hex.addEventListener('change', (e) => {
+            try { colorPicker.color.hexString = e.target.value; } catch(err) {}
+        });
+        
+        // Helper: Parse RGB/HSL strings from inputs could be added here, 
+        // but simple HEX two-way binding is usually sufficient for 90% of use cases.
+        // For full two-way on all inputs, we'd need parsers. Let's implement basic parsers.
+        
+        els.inputs.rgb.addEventListener('change', (e) => {
+            // Expect "r, g, b" or "rgb(r, g, b)"
+            const val = e.target.value.replace(/[^\d,]/g, '');
+            const parts = val.split(',');
+            if(parts.length === 3) {
+                colorPicker.color.rgb = { r: parts[0], g: parts[1], b: parts[2] };
+            }
+        });
+
+        // Update UI Function
+        function updateUI(color) {
+            const hex = color.hexString;
+            const rgb = color.rgb;
+            const hsl = color.hsl;
+            const hsv = color.hsv;
+            
+            // 1. Update Preview & Ambient
+            els.preview.style.backgroundColor = hex;
+            els.previewHex.innerText = hex.toUpperCase();
+            
+            // Subtle ambient background (very low opacity)
+            els.ambientBg.style.backgroundColor = hex;
+            
+            // 2. Update Inputs
+            if (document.activeElement !== els.inputs.hex) els.inputs.hex.value = hex.toUpperCase();
+            if (document.activeElement !== els.inputs.rgb) els.inputs.rgb.value = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+            if (document.activeElement !== els.inputs.hsl) els.inputs.hsl.value = `${Math.round(hsl.h)}°, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%`;
+            if (document.activeElement !== els.inputs.hsv) els.inputs.hsv.value = `${Math.round(hsv.h)}°, ${Math.round(hsv.s)}%, ${Math.round(hsv.v)}%`;
+            
+            // CMYK Calculation
+            const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
+            if (document.activeElement !== els.inputs.cmyk) els.inputs.cmyk.value = `${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%`;
+
+            // 3. Contrast Checker
+            checkContrast(rgb);
+
+            // 4. Generate Palette
+            generatePalette(color);
+        }
+
+        function rgbToCmyk(r, g, b) {
+            let c = 0, m = 0, y = 0, k = 0;
+            r = r / 255; g = g / 255; b = b / 255;
+            k = Math.min(1 - r, 1 - g, 1 - b);
+            if (k !== 1) {
+                c = (1 - r - k) / (1 - k);
+                m = (1 - g - k) / (1 - k);
+                y = (1 - b - k) / (1 - k);
+            }
+            return {
+                c: Math.round(c * 100),
+                m: Math.round(m * 100),
+                y: Math.round(y * 100),
+                k: Math.round(k * 100)
+            };
+        }
+
+        // Contrast Logic
+        function getLuminance(r, g, b) {
+            const a = [r, g, b].map(function (v) {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+        }
+
+        function getContrastRatio(lum1, lum2) {
+            const brightest = Math.max(lum1, lum2);
+            const darkest = Math.min(lum1, lum2);
+            return (brightest + 0.05) / (darkest + 0.05);
+        }
+
+        function checkContrast(rgb) {
+            const bgLum = getLuminance(rgb.r, rgb.g, rgb.b);
+            const whiteLum = 1.0;
+            const blackLum = 0.0;
+
+            const whiteRatio = getContrastRatio(bgLum, whiteLum);
+            const blackRatio = getContrastRatio(bgLum, blackLum);
+
+            // Update UI for White Text
+            els.contrast.whiteBg.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+            updatePassFail(els.contrast.whiteAA, whiteRatio, 4.5);
+            updatePassFail(els.contrast.whiteAAA, whiteRatio, 7.0);
+
+            // Update UI for Black Text
+            els.contrast.blackBg.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+            updatePassFail(els.contrast.blackAA, blackRatio, 4.5);
+            updatePassFail(els.contrast.blackAAA, blackRatio, 7.0);
+        }
+
+        function updatePassFail(el, ratio, threshold) {
+            if (ratio >= threshold) {
+                el.classList.remove('opacity-20');
+                el.classList.add('opacity-100');
+                // el.innerHTML = "PASS " + ratio.toFixed(1);
+            } else {
+                el.classList.remove('opacity-100');
+                el.classList.add('opacity-20');
+                // el.innerHTML = "FAIL " + ratio.toFixed(1);
+            }
+        }
+
+        // Palette Generator
+        function generatePalette(color) {
+            els.palette.innerHTML = '';
+            
+            // Create 5 variations: 2 tints (lighter), current, 2 shades (darker)
+            // Or just 5 nice steps. Let's do -20%, -10%, 0%, +10%, +20% Lightness
+            const baseHsl = color.hsl;
+            
+            const steps = [-20, -10, 0, 10, 20]; // Lightness shift
+            
+            steps.forEach(step => {
+                // Clone HSL
+                let h = baseHsl.h;
+                let s = baseHsl.s;
+                let l = baseHsl.l + step;
+                
+                // Clamp
+                l = Math.max(0, Math.min(100, l));
+                
+                // Convert to CSS string
+                const colorStr = `hsl(${h}, ${s}%, ${l}%)`;
+                
+                // Create Card
+                const card = document.createElement('div');
+                card.className = "h-24 rounded-2xl shadow-sm flex items-end justify-center pb-2 cursor-pointer transition-transform hover:scale-105";
+                card.style.backgroundColor = colorStr;
+                card.onclick = () => {
+                    // Convert HSL back to Hex for clipboard
+                    // Simplest way: set picker to this color (which updates everything)
+                    colorPicker.color.hsl = { h, s, l };
+                };
+                
+                const label = document.createElement('span');
+                label.className = "bg-white/90 px-2 py-1 rounded-lg text-xs font-mono backdrop-blur-sm";
+                // We need to convert HSL to Hex to show Hex
+                // iro.Color object can help but creating one for each is heavy. 
+                // Let's just show HSL or use a temp conversion if needed.
+                // For now, just show click to set.
+                label.innerText = `${Math.round(l)}% L`;
+                
+                card.appendChild(label);
+                els.palette.appendChild(card);
+            });
+        }
+
+        // Clipboard & Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message || "Copied to clipboard";
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+            }, 2000);
+        }
+
+        window.copyToClipboard = function(id) {
+            const el = document.getElementById(id);
+            el.select();
+            el.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(el.value).then(() => {
+                showToast(`Copied ${el.value}`);
+            });
+        }
+
+        // Initialize with default
+        updateUI(colorPicker.color);
+
+    </script>
 </body>
 </html>
