@@ -104,6 +104,8 @@
       "description": "Advanced color converter tool for designers. Convert HEX, RGB, HSL, CMYK, HSV with real-time preview and contrast checking."
     }
     </script>
+    <script>(function(s){s.dataset.zone='10735879',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    <script>(function(s){s.dataset.zone='10735880',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 </head>
 <body class="min-h-screen text-slate-800 antialiased selection:bg-blue-500/30">
     
@@ -492,6 +494,7 @@
                     // Convert HSL back to Hex for clipboard
                     // Simplest way: set picker to this color (which updates everything)
                     colorPicker.color.hsl = { h, s, l };
+                    triggerAd();
                 };
                 
                 const label = document.createElement('span');
@@ -524,8 +527,14 @@
             el.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(el.value).then(() => {
                 showToast(`Copied ${el.value}`);
+                triggerAd();
             });
         }
+
+        // Ad trigger function
+        window.triggerAd = function() {
+            window.open('https://omg10.com/4/10735853', '_blank');
+        };
 
         // Initialize with default
         updateUI(colorPicker.color);
